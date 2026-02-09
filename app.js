@@ -49,4 +49,5 @@ app.get('/api/product/:id', (req, res) => {
     res.json(p);
 });
 
-app.listen(3000, () => console.log('Hounda Zone Server: http://localhost:3000'));
+
+module.exports = app;(3000, () => console.log('Hounda Zone Server: http://localhost:3000'));
