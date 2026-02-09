@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>إضافة إعلان | Hounda Zone</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #1a1a1a; color: white; padding: 20px; }
+        .img-box { width: 100%; height: 100px; border: 2px dashed #ffc107; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; border-radius: 10px; background: #333; font-size: 12px; }
+        .img-box input { opacity: 0; position: absolute; width: 100%; height: 100%; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 600px;">
+        <div class="bg-dark p-4 rounded border border-warning">
+            <h3 class="text-center text-warning mb-4">إنشاء إعلان جديد</h3>
+            <form id="pForm">
+                <input type="text" id="title" class="form-control mb-3 bg-secondary text-white border-0" placeholder="اسم المنتج" required>
+                <input type="number" id="price" class="form-control mb-3 bg-secondary text-white border-0" placeholder="السعر" required>
+                <textarea id="desc" class="form-control mb-4 bg-secondary text-white border-0" placeholder="وصف المنتج" rows="4" required></textarea>
+                
+                <label class="mb-2">الصور (الصورة الأولى هي الأساسية):</label>
+                <div class="row g-2">
+                    <div class="col-4"><div class="img-box"><span>الأساسية</span><input type="file" id="mI" accept="image/*" required></div></div>
+                    <div class="col-4"><div class="img-box"><span>+ صورة</span><input type="file" class="ext" accept="image/*"></div></div>
+                    <div class="col-4"><div class="img-box"><span>+ صورة</span><input type="file" class="ext" accept="image/*"></div></div>
+                    <div class="col-4"><div class="img-box"><span>+ صورة</span><input type="file" class="ext" accept="image/*"></div></div>
+                    <div class="col-4"><div class="img-box"><span>+ صورة</span><input type="file" class="ext" accept="image/*"></div></div>
+                    <div class="col-4"><div class="img-box"><span>+ صورة</span><input type="file" class="ext" accept="image/*"></div></div>
+                </div>
+                <button type="submit" class="btn btn-warning w-100 mt-4 fw-bold">نشر الإعلان</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.getElementById('pForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const fd = new FormData();
+            fd.append('title', document.getElementById('title').value);
+            fd.append('price', document.getElementById('price').value);
+            fd.append('description', document.getElementById('desc').value);
+            fd.append('mainImage', document.getElementById('mI').files[0]);
+            document.querySelectorAll('.ext').forEach(i => { if(i.files[0]) fd.append('extraImages', i.files[0]); });
+
+            const res = await fetch('/add-product', { method: 'POST', body: fd });
+            if(res.ok) { alert('تم النشر!'); location.href = '/'; }
+        };
+    </script>
+</body>
+</html>

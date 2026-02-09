@@ -1,0 +1,52 @@
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const app = express();
+
+const storage = multer.diskStorage({
+    destination: './public/uploads/',
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
+
+app.use(express.static('public'));
+app.use(express.json());
+
+let products = []; 
+
+// إضافة منتج
+app.post('/add-product', upload.fields([
+    { name: 'mainImage', maxCount: 1 },
+    { name: 'extraImages', maxCount: 5 }
+]), (req, res) => {
+    try {
+        const newProduct = {
+            id: Date.now(),
+            title: req.body.title,
+            price: req.body.price,
+            description: req.body.description,
+            mainImage: '/uploads/' + req.files['mainImage'][0].filename,
+            extraImages: req.files['extraImages'] ? req.files['extraImages'].map(f => '/uploads/' + f.filename) : []
+        };
+        products.push(newProduct);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false });
+    }
+});
+
+// مسح منتج
+app.delete('/api/product/:id', (req, res) => {
+    products = products.filter(p => p.id != req.params.id);
+    res.json({ success: true });
+});
+
+app.get('/api/products', (req, res) => res.json(products));
+app.get('/api/product/:id', (req, res) => {
+    const p = products.find(prod => prod.id == req.params.id);
+    res.json(p);
+});
+
+app.listen(3000, () => console.log('Hounda Zone Server: http://localhost:3000'));
