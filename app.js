@@ -50,4 +50,5 @@ app.get('/api/product/:id', (req, res) => {
 });
 
 
-module.exports = app;(3000, () => console.log('Hounda Zone Server: http://localhost:3000'));
+module.exports = app;
+
