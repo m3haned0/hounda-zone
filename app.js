@@ -4,7 +4,7 @@ const path = require('path');
 const app = express();
 
 const storage = multer.diskStorage({
-    destination: './public/uploads/',
+    destination: '/tmp/', // Vercel بيحتاج التخزين المؤقت هنا
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
     }
@@ -16,7 +16,6 @@ app.use(express.json());
 
 let products = []; 
 
-// إضافة منتج
 app.post('/add-product', upload.fields([
     { name: 'mainImage', maxCount: 1 },
     { name: 'extraImages', maxCount: 5 }
@@ -27,7 +26,7 @@ app.post('/add-product', upload.fields([
             title: req.body.title,
             price: req.body.price,
             description: req.body.description,
-            mainImage: '/uploads/' + req.files['mainImage'][0].filename,
+            mainImage: req.files['mainImage'] ? '/uploads/' + req.files['mainImage'][0].filename : '',
             extraImages: req.files['extraImages'] ? req.files['extraImages'].map(f => '/uploads/' + f.filename) : []
         };
         products.push(newProduct);
@@ -37,7 +36,6 @@ app.post('/add-product', upload.fields([
     }
 });
 
-// مسح منتج
 app.delete('/api/product/:id', (req, res) => {
     products = products.filter(p => p.id != req.params.id);
     res.json({ success: true });
@@ -49,6 +47,5 @@ app.get('/api/product/:id', (req, res) => {
     res.json(p);
 });
 
-
+// التعديل المهم لـ Vercel
 module.exports = app;
-
