@@ -3,8 +3,9 @@ const multer = require('multer');
 const path = require('path');
 const app = express();
 
+// إعداد التخزين المؤقت لأن Vercel لا يدعم حفظ الملفات الدائم
 const storage = multer.diskStorage({
-    destination: '/tmp/', // Vercel بيحتاج التخزين المؤقت هنا
+    destination: '/tmp/', 
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
     }
@@ -36,16 +37,11 @@ app.post('/add-product', upload.fields([
     }
 });
 
-app.delete('/api/product/:id', (req, res) => {
-    products = products.filter(p => p.id != req.params.id);
-    res.json({ success: true });
-});
-
 app.get('/api/products', (req, res) => res.json(products));
 app.get('/api/product/:id', (req, res) => {
     const p = products.find(prod => prod.id == req.params.id);
     res.json(p);
 });
 
-// التعديل المهم لـ Vercel
+// هذا هو السطر الأهم لـ Vercel
 module.exports = app;
